@@ -3,6 +3,7 @@ const cors = require('cors')
 const app = express()
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const verifyJwt = require('./middlewares/verifyJwt');
+const jwt = require('jsonwebtoken');
 app.use(express.json())
 app.use(cors())
 const port = process.env.PORT || 80
@@ -18,6 +19,28 @@ async function run() {
         await client.connect();
         const userCollection = client.db("powerHack").collection("user");
         const billCollection = client.db("powerHack").collection("bill");
+
+
+        /*
+        
+        login
+        register
+        
+        */
+
+
+        app.get('/api/register', (req, res) => {
+            const token = jwt.sign(req.body, process.env.JWT__SECRET)
+            res.send({ "token": token })
+        })
+
+
+        /*
+                
+        login
+        register
+        
+        */
 
         app.get('/', verifyJwt, async (req, res) => {
             res.send("hello")
