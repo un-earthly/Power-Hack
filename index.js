@@ -57,9 +57,25 @@ async function run() {
         */
 
 
-        // serveing billing listing
+        // serveing billing listing along with search result
         app.get('/api/billing-list', verifyJwt, async (req, res) => {
-            const result = await billCollection.find().toArray()
+            let result;
+            const name = req.body.name
+            const email = req.body.email
+            const phone = req.body.phone
+            if (name) {
+                result = await billCollection.find({ name }).toArray()
+            }
+            else if (email) {
+                result = await billCollection.find({ email }).toArray()
+            }
+            else if (phone) {
+                result = await billCollection.find({ phone }).toArray()
+            }
+            else {
+                result = await billCollection.find().toArray()
+            }
+
             res.send(result)
         })
 
@@ -73,19 +89,21 @@ async function run() {
 
 
         // updating billing info
-        app.patch('/api/add-billing/:id', verifyJwt, async (req, res) => {
+        app.patch('/api/billing/:id', verifyJwt, async (req, res) => {
             const result = await billCollection.updateOne({ _id: ObjectId(req.params.id) }, req.body)
             res.send(result)
         })
 
 
 
-        
+
         // updating billing info
-        app.delete('/api/add-billing/:id', verifyJwt, async (req, res) => {
+        app.delete('/api/billing/:id', verifyJwt, async (req, res) => {
             const result = await billCollection.deleteOne({ _id: ObjectId(req.params.id) })
             res.send(result)
         })
+
+
 
     }
     finally {
