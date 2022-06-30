@@ -57,11 +57,21 @@ async function run() {
         */
 
 
-
+        // serveing billing listing
         app.get('/api/billing-list', verifyJwt, async (req, res) => {
             const result = await billCollection.find().toArray()
             res.send(result)
         })
+
+
+
+        // uploading billing info
+        app.get('/api/add-billing', verifyJwt, async (req, res) => {
+            const result = await billCollection.insertOne(req.body)
+            res.send(result)
+        })
+
+        
 
 
 
