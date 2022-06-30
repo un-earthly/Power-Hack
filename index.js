@@ -1,7 +1,7 @@
 const express = require('express')
 const cors = require('cors')
 const app = express()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const verifyJwt = require('./middlewares/verifyJwt');
 const jwt = require('jsonwebtoken');
 app.use(express.json())
@@ -66,21 +66,20 @@ async function run() {
 
 
         // uploading billing info
-        app.get('/api/add-billing', verifyJwt, async (req, res) => {
+        app.post('/api/add-billing', verifyJwt, async (req, res) => {
             const result = await billCollection.insertOne(req.body)
             res.send(result)
         })
 
+
+        // updating billing info
+        app.patch('/api/add-billing/:id', verifyJwt, async (req, res) => {
+            const result = await billCollection.updateOne({ _id: ObjectId(req.params.id) }, req.body)
+            res.send(result)
+        })
         
 
 
-
-        /*
-                
-        login
-        register
-        
-        */
     }
     finally {
     }
