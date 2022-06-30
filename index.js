@@ -60,9 +60,9 @@ async function run() {
         // serveing billing listing along with search result
         app.get('/api/billing-list', verifyJwt, async (req, res) => {
             let result;
-            const name = req.body.name
-            const email = req.body.email
-            const phone = req.body.phone
+            const name = JSON.parse(req.query.query).name
+            const email = JSON.parse(req.query.query).email
+            const phone = JSON.parse(req.query.query).phone
             if (name) {
                 result = await billCollection.find({ name }).toArray()
             }
@@ -75,7 +75,6 @@ async function run() {
             else {
                 result = await billCollection.find().toArray()
             }
-
             res.send(result)
         })
 
@@ -104,6 +103,13 @@ async function run() {
         })
 
 
+
+        // getting total paid info
+        app.get('/api/total-paid', verifyJwt, async (req, res) => {
+            let total = 0;
+            (await billCollection.find().toArray()).map(o => total = total + o.bill)
+            res.send({ total })
+        })
 
     }
     finally {
