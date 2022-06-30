@@ -41,7 +41,6 @@ async function run() {
         app.post('/api/login', async (req, res) => {
             const token = jwt.sign(req.body, process.env.JWT__SECRET)
             const user = await userCollection.findOne({ email: req.body.email, pass: req.body.pass })
-            console.log(user)
             if (!user) {
                 res.send({ "Error": "User not found" })
             } else {
@@ -57,8 +56,11 @@ async function run() {
         
         */
 
-        app.get('/', verifyJwt, async (req, res) => {
-            res.send("hello")
+
+
+        app.get('/api/billing-list', verifyJwt, async (req, res) => {
+            const result = await billCollection.find().toArray()
+            res.send(result)
         })
 
 
