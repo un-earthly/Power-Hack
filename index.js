@@ -78,7 +78,11 @@ async function run() {
             res.send(result)
         })
         
-
+        // updating billing info
+        app.delete('/api/add-billing/:id', verifyJwt, async (req, res) => {
+            const result = await billCollection.deleteOne({ _id: ObjectId(req.params.id) })
+            res.send(result)
+        })
 
     }
     finally {
