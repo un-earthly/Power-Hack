@@ -60,9 +60,10 @@ async function run() {
         // serveing billing listing along with search result
         app.get('/api/billing-list', verifyJwt, async (req, res) => {
             let result;
-            const name = JSON.parse(req.query.query).name
-            const email = JSON.parse(req.query.query).email
-            const phone = JSON.parse(req.query.query).phone
+            const searchQuery = !req.query ? JSON.parse(req.query.query) : ""
+            const name = searchQuery.name
+            const email = searchQuery.email
+            const phone = searchQuery.phone
             if (name) {
                 result = await billCollection.find({ name }).toArray()
             }
