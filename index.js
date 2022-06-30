@@ -29,9 +29,24 @@ async function run() {
         */
 
 
-        app.get('/api/register', (req, res) => {
+        app.post('/api/register', async (req, res) => {
             const token = jwt.sign(req.body, process.env.JWT__SECRET)
-            res.send({ "token": token })
+            await userCollection.insertOne(req.body)
+            res.send({ token })
+        })
+
+        // login
+
+
+        app.post('/api/login', async (req, res) => {
+            const token = jwt.sign(req.body, process.env.JWT__SECRET)
+            const user = await userCollection.findOne({ email: req.body.email, pass: req.body.pass })
+            console.log(user)
+            if (!user) {
+                res.send({ "Error": "User not found" })
+            } else {
+                res.send({ token })
+            }
         })
 
 
@@ -45,6 +60,15 @@ async function run() {
         app.get('/', verifyJwt, async (req, res) => {
             res.send("hello")
         })
+
+
+
+        /*
+                
+        login
+        register
+        
+        */
     }
     finally {
     }
