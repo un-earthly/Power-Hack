@@ -121,6 +121,14 @@ async function run() {
             const count = await billCollection.countDocuments()
             res.send({ count })
         })
+        app.get('/api/total-paid', verifyJwt, async (req, res) => {
+            let total = 0
+            const count = await (await billCollection.find().toArray()).map(b => b.bill)
+            for (let i = 0; i < count.length; i++) {
+                total += count[i]
+            }
+            res.send({ total })
+        })
 
     }
     finally {
