@@ -59,8 +59,16 @@ async function run() {
 
         // serveing billing listing along with search result
         app.get('/api/billing-list', verifyJwt, async (req, res) => {
+            const pageNum = parseInt(req.query.pageNum)
+            let result = await billCollection.find().skip(pageNum * 10).limit(10).toArray()
+            res.send(result)
+        })
+
+        // searching data
+
+        app.post('/api/billing-list', verifyJwt, async (req, res) => {
             let result;
-            const searchQuery = !req.query ? JSON.parse(req.query.query) : ""
+            const searchQuery = req.body
             const name = searchQuery.name
             const email = searchQuery.email
             const phone = searchQuery.phone
@@ -73,13 +81,9 @@ async function run() {
             else if (phone) {
                 result = await billCollection.find({ phone }).toArray()
             }
-            else {
-                result = await billCollection.find().toArray()
-            }
+
             res.send(result)
         })
-
-
 
         // uploading billing info
         app.post('/api/add-billing', verifyJwt, async (req, res) => {
@@ -89,8 +93,17 @@ async function run() {
 
 
         // updating billing info
-        app.patch('/api/billing/:id', verifyJwt, async (req, res) => {
-            const result = await billCollection.updateOne({ _id: ObjectId(req.params.id) }, req.body)
+        app.patch('/api/update-billing/:id', verifyJwt, async (req, res) => {
+            const { name, email, phone, bill } = req.body
+            const updateDoc = {
+                $set: {
+                    name,
+                    email,
+                    phone,
+                    bill
+                },
+            };
+            const result = await billCollection.updateOne({ _id: ObjectId(req.params.id) }, updateDoc)
             res.send(result)
         })
 
@@ -98,18 +111,15 @@ async function run() {
 
 
         // updating billing info
-        app.delete('/api/billing/:id', verifyJwt, async (req, res) => {
+        app.delete('/api/delete-billing/:id', verifyJwt, async (req, res) => {
             const result = await billCollection.deleteOne({ _id: ObjectId(req.params.id) })
             res.send(result)
         })
 
-
-
-        // getting total paid info
-        app.get('/api/total-paid', verifyJwt, async (req, res) => {
-            let total = 0;
-            (await billCollection.find().toArray()).map(o => total = total + o.bill)
-            res.send({ total })
+        // serving document size info 
+        app.get('/api/total-billings-docs', verifyJwt, async (req, res) => {
+            const count = await billCollection.countDocuments()
+            res.send({ count })
         })
 
     }
